@@ -250,10 +250,14 @@ paket-files/
 .fake/
 
 # JetBrains Rider
-.idea/
+**/.idea/
 *.sln.iml
 
-**/.vscode/
+**/.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
 
 # CodeRush
 .cr/
