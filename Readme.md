@@ -3,7 +3,7 @@ An attempt to implement several Algorithms and Data Structures in various Progra
 
 Currently we are building Algorithms in C#, Java and Python.
 
-The aim is to Maintain the Same Interface and Functionality throughout all the Languuages.
+The aim is to Maintain the Same Interface and Functionality for all the Languages.
 
 ## Some GuideLines
 1. Maintain each Classes/Modules in Seperate Code Files
