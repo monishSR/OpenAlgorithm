@@ -1,6 +1,4 @@
 import matplotlib.pyplot as plt
-import numpy.random as ran
-import matplotlib.animation as animation
 import seaborn as sb
 import numpy as np
 
@@ -54,7 +52,7 @@ class SearchVisualizer:
         self.searcher = searcher
         self.fig = plt.figure()
 
-    def analyze(self,maxpts=1000):
+    def analyze(self, maxpts=1000):
         # x Number of elements
         # y_1 number of comparisons when First Element is the key
         # y_2 number of comparisons when Middle Element is the key
@@ -63,16 +61,16 @@ class SearchVisualizer:
         for i in range(100,maxpts,100):
             x = np.vstack((x,[i]))
             arr = np.arange(0,i,1)
-            key = arr[0]
+            key = 0
             self.searcher.search(arr,key)
             y_1 = np.vstack((y_1,[self.searcher.count]))
-            key = arr[int(i/2)]
+            key = int(i/2)
             self.searcher.search(arr, key)
             y_2 = np.vstack((y_2, [self.searcher.count]))
             key = i+1
             self.searcher.search(arr, key)
             y_3 = np.vstack((y_3, [self.searcher.count]))
-        plt.suptitle(self.searcher.name + " Analysis")
+        plt.suptitle(self.searcher.name + " Analysis",size=19)
         plt.subplot(2, 2, 1)
         plt.title("First Element as key")
         plt.xlabel("No. of Elements")
