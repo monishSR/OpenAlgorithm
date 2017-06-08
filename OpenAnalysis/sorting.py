@@ -293,7 +293,7 @@ class SortVisualizer:
             y_1 = np.vstack((y_1, [val_sorted]))  # add number of basic operations to y lists
             y_2 = np.vstack((y_2, [val_normal]))
             y_3 = np.vstack((y_3, [val_reverse]))
-        plt.title(self.sorter.name + "Analysis")
+        plt.suptitle(self.sorter.name + " Analysis")
         plt.subplot(2, 2, 1)
         plt.title("Sorted Array")
         plt.xlabel("No. of Elements")
@@ -316,4 +316,4 @@ class SortVisualizer:
 if __name__ == "__main__":
     # Driver code
     vis = SortVisualizer(MergeSort())
-    vis.visualize()
+    vis.efficiency()
