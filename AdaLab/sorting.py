@@ -7,13 +7,24 @@ import numpy as np
 
 
 class SortingAlgorithm:
+    """
+    Base class for all sorting algorithms
+    """
     def __init__(self,name):
+        """
+        :param name: Name of the Sorting algorithm
+        """
         self.name = name
-        self.hist_array = None
-        self.count = 0
+        self.hist_array = None  # 2D array to save instances of original array for each swap
+        self.count = 0          # Number of basic operations performed by the algorithm
 
     def sort(self,array,visualization):
-        self.count = 0
+        """
+        The Sorting algorithm must call this before proceeding
+        :param array: 1D numpy array which has to be sorted
+        :param visualization: If True, saves instances of array after each swap
+        """
+        self.count = 0          # Reset the count
         if visualization:
             self.hist_array = np.array(array)
         pass
@@ -115,6 +126,7 @@ class QuickSort(SortingAlgorithm):
 
     @staticmethod
     def __median_of_three(array, start, end, visualization=False):
+        # Double underscore before the name of a method makes it private
         histarr = None
         count = 0
         if visualization:
@@ -156,7 +168,7 @@ class QuickSort(SortingAlgorithm):
         arr[i + 1], arr[h] = arr[h], arr[i + 1]
         return i + 1, hist, count
 
-    def quickSortIterative(self,arr, l, h, partition_alg=__right_partition, visualization=False):
+    def __quickSortIterative(self,arr, l, h, partition_alg=__right_partition, visualization=False):
         # Create an auxiliary stack
         size = h - l + 1
         stack = [0] * size
@@ -205,11 +217,15 @@ class QuickSort(SortingAlgorithm):
 
     def sort(self,array, visualization=False):
         SortingAlgorithm.sort(self,array,visualization)
-        self.quickSortIterative(array, 0, array.size - 1, partition_alg=self.__median_of_three, visualization=visualization)
+        self.__quickSortIterative(array, 0, array.size - 1, partition_alg=self.__median_of_three, visualization=visualization)
 
 
 class SortVisualizer:
     def __init__(self, sorter:SortingAlgorithm) -> None:
+        """
+        Constructor for Visualizer
+        :param sorter: Instance of a Sorting Algorithm
+        """
         self.sorter = sorter
         self.fig = plt.figure()
         self.index = 0
@@ -255,6 +271,7 @@ class SortVisualizer:
         Plots the running time sorting algorithm
         Checks for 3 cases, Already Sorted array, reverse sorted array and Shuffled array
         Sorting Algorithm must return number of basic operations
+        :param maxpts: Upper bound on elements chosen for analysing efficiency
         """
         # x is list of input sizes
         # y_1 running time in case of Sorted Array
@@ -297,5 +314,6 @@ class SortVisualizer:
 
 
 if __name__ == "__main__":
+    # Driver code
     vis = SortVisualizer(MergeSort())
     vis.visualize()
