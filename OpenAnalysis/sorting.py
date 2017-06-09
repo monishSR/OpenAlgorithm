@@ -18,7 +18,7 @@ class SortingAlgorithm:
         self.hist_array = None  # 2D array to save instances of original array for each swap
         self.count = 0          # Number of basic operations performed by the algorithm
 
-    def sort(self,array,visualization):
+    def sort(self,array:np.ndarray,visualization):
         """
         The Sorting algorithm must call this before proceeding
         :param array: 1D numpy array which has to be sorted
@@ -118,6 +118,46 @@ class MergeSort(SortingAlgorithm):
             unit *= 2
         if visualization:
             self.hist_array = np.vstack([self.hist_array, array])
+
+
+class HeapSort(SortingAlgorithm):
+    def __init__(self):
+        SortingAlgorithm.__init__(self,"Heapsort")
+
+    def sort(self,array:np.ndarray,visualization=False):
+        SortingAlgorithm.sort(self,array,visualization)
+        # convert aList to heap
+        length = array.size - 1
+        leastParent = int(length / 2)
+        for i in range(leastParent, -1, -1):
+            self.moveDown(array, i, length,visualization)
+
+        # flatten heap into sorted array
+        for i in range(length, 0, -1):
+            if array[0] > array[i]:
+                array[0],array[i]=array[i],array[0]
+                self.moveDown(array, 0, i - 1,visualization)
+        if visualization:
+            self.hist_array = np.vstack([self.hist_array,array])
+
+    def moveDown(self,aList, first, last,visualization):
+        largest = 2 * first + 1
+        while largest <= last:
+            # right child exists and is larger than left child
+            self.count+=1
+            if (largest < last) and (aList[largest] < aList[largest + 1]):
+                largest += 1
+
+            # right child is larger than parent
+            if aList[largest] > aList[first]:
+                aList[largest],aList[first] = aList[first],aList[largest]
+                # move down to largest child
+                first = largest
+                largest = 2 * first + 1
+                if visualization:
+                    self.hist_array = np.vstack([self.hist_array,aList])
+            else:
+                return  # force exit
 
 
 class QuickSort(SortingAlgorithm):
@@ -314,6 +354,4 @@ class SortVisualizer:
 
 
 if __name__ == "__main__":
-    # Driver code
-    vis = SortVisualizer(MergeSort())
-    vis.efficiency()
+    SortVisualizer(HeapSort()).visualize(num=500,save=True)
