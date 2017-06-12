@@ -10,21 +10,22 @@ class SortingAlgorithm:
     """
     Base class for all sorting algorithms
     """
-    def __init__(self,name):
+
+    def __init__(self, name: str):
         """
         :param name: Name of the Sorting algorithm
         """
         self.name = name
         self.hist_array = None  # 2D array to save instances of original array for each swap
-        self.count = 0          # Number of basic operations performed by the algorithm
+        self.count = 0  # Number of basic operations performed by the algorithm
 
-    def sort(self,array:np.ndarray,visualization):
+    def sort(self, array: np.ndarray, visualization: bool):
         """
         The Sorting algorithm must call this before proceeding
         :param array: 1D numpy array which has to be sorted
         :param visualization: If True, saves instances of array after each swap
         """
-        self.count = 0          # Reset the count
+        self.count = 0  # Reset the count
         if visualization:
             self.hist_array = np.array(array)
         pass
@@ -33,16 +34,16 @@ class SortingAlgorithm:
 
 class BubbleSort(SortingAlgorithm):
     def __init__(self):
-        SortingAlgorithm.__init__(self,"Bubble Sort")
+        SortingAlgorithm.__init__(self, "Bubble Sort")
 
-    def sort(self,array,visualization=False):
-        SortingAlgorithm.sort(self,array,visualization)
+    def sort(self, array: np.ndarray, visualization=False):
+        SortingAlgorithm.sort(self, array, visualization)
         for i in range(0, array.size):
             exch = False
             for j in range(0, array.size - i - 1):
                 self.count += 1
                 if array[j] > array[j + 1]:
-                    array[j],array[j+1] = array[j+1],array[j]
+                    array[j], array[j + 1] = array[j + 1], array[j]
                     exch = True
                 if visualization:
                     self.hist_array = np.vstack([self.hist_array, array])
@@ -56,8 +57,8 @@ class InsertionSort(SortingAlgorithm):
     def __init__(self):
         SortingAlgorithm.__init__(self, "Insertion Sort")
 
-    def sort(self,array,visualization=False):
-        SortingAlgorithm.sort(self, array,visualization)
+    def sort(self, array: np.ndarray, visualization=False):
+        SortingAlgorithm.sort(self, array, visualization)
         for i in range(1, array.size):
             ele = array[i]
             ins_pos = i - 1
@@ -76,8 +77,8 @@ class SelectionSort(SortingAlgorithm):
     def __init__(self):
         SortingAlgorithm.__init__(self, "Selection Sort")
 
-    def sort(self,array,visualization=False):
-        SortingAlgorithm.sort(self, array,visualization)
+    def sort(self, array: np.ndarray, visualization=False):
+        SortingAlgorithm.sort(self, array, visualization)
         for i in range(array.size):
             min_index = i
             for j in range(i + 1, array.size):
@@ -95,8 +96,8 @@ class MergeSort(SortingAlgorithm):
     def __init__(self):
         SortingAlgorithm.__init__(self, "Merge Sort")
 
-    def sort(self,array,visualization=False):
-        SortingAlgorithm.sort(self, array,visualization)
+    def sort(self, array: np.ndarray, visualization=False):
+        SortingAlgorithm.sort(self, array, visualization)
         unit = 1
         while unit <= array.size:
             for h in range(0, array.size, unit * 2):
@@ -122,40 +123,40 @@ class MergeSort(SortingAlgorithm):
 
 class HeapSort(SortingAlgorithm):
     def __init__(self):
-        SortingAlgorithm.__init__(self,"Heapsort")
+        SortingAlgorithm.__init__(self, "Heapsort")
 
-    def sort(self,array:np.ndarray,visualization=False):
-        SortingAlgorithm.sort(self,array,visualization)
+    def sort(self, array: np.ndarray, visualization=False):
+        SortingAlgorithm.sort(self, array, visualization)
         # convert aList to heap
         length = array.size - 1
         leastParent = int(length / 2)
         for i in range(leastParent, -1, -1):
-            self.moveDown(array, i, length,visualization)
+            self.moveDown(array, i, length, visualization)
 
         # flatten heap into sorted array
         for i in range(length, 0, -1):
             if array[0] > array[i]:
-                array[0],array[i]=array[i],array[0]
-                self.moveDown(array, 0, i - 1,visualization)
+                array[0], array[i] = array[i], array[0]
+                self.moveDown(array, 0, i - 1, visualization)
         if visualization:
-            self.hist_array = np.vstack([self.hist_array,array])
+            self.hist_array = np.vstack([self.hist_array, array])
 
-    def moveDown(self,aList, first, last,visualization):
+    def moveDown(self, aList: np.ndarray, first: int, last: int, visualization: bool):
         largest = 2 * first + 1
         while largest <= last:
             # right child exists and is larger than left child
-            self.count+=1
+            self.count += 1
             if (largest < last) and (aList[largest] < aList[largest + 1]):
                 largest += 1
 
             # right child is larger than parent
             if aList[largest] > aList[first]:
-                aList[largest],aList[first] = aList[first],aList[largest]
+                aList[largest], aList[first] = aList[first], aList[largest]
                 # move down to largest child
                 first = largest
                 largest = 2 * first + 1
                 if visualization:
-                    self.hist_array = np.vstack([self.hist_array,aList])
+                    self.hist_array = np.vstack([self.hist_array, aList])
             else:
                 return  # force exit
 
@@ -165,7 +166,7 @@ class QuickSort(SortingAlgorithm):
         SortingAlgorithm.__init__(self, "Quicksort")
 
     @staticmethod
-    def __median_of_three(array, start, end, visualization=False):
+    def __median_of_three(array: np.ndarray, start: int, end: int, visualization=False):
         # Double underscore before the name of a method makes it private
         histarr = None
         count = 0
@@ -190,7 +191,7 @@ class QuickSort(SortingAlgorithm):
         return left - 1, histarr, count
 
     @staticmethod
-    def __right_partition(arr, l, h, visualization=False):
+    def __right_partition(arr: np.ndarray, l: int, h: int, visualization=False):
         i = (l - 1)
         x = arr[h]
         hist = None
@@ -208,7 +209,8 @@ class QuickSort(SortingAlgorithm):
         arr[i + 1], arr[h] = arr[h], arr[i + 1]
         return i + 1, hist, count
 
-    def __quickSortIterative(self,arr, l, h, partition_alg=__right_partition, visualization=False):
+    def __quickSortIterative(self, arr: np.ndarray, l: int, h: int, partition_alg=__right_partition,
+                             visualization=False):
         # Create an auxiliary stack
         size = h - l + 1
         stack = [0] * size
@@ -255,13 +257,16 @@ class QuickSort(SortingAlgorithm):
         if visualization:
             self.hist_array = np.vstack([self.hist_array, arr])
 
-    def sort(self,array, visualization=False):
-        SortingAlgorithm.sort(self,array,visualization)
-        self.__quickSortIterative(array, 0, array.size - 1, partition_alg=self.__median_of_three, visualization=visualization)
+    def sort(self, array: np.ndarray, visualization=False):
+        SortingAlgorithm.sort(self, array, visualization)
+        self.__quickSortIterative(array, 0, array.size - 1, partition_alg=self.__median_of_three,
+                                  visualization=visualization)
 
 
 class SortVisualizer:
-    def __init__(self, sorter:SortingAlgorithm) -> None:
+    hist_arr, scatter, animation = None, None, None
+
+    def __init__(self, sorter: SortingAlgorithm) -> None:
         """
         Constructor for Visualizer
         :param sorter: Instance of a Sorting Algorithm
@@ -296,13 +301,14 @@ class SortVisualizer:
         plt.ylabel("Element")
         data = np.arange(num)
         ran.shuffle(data)
-        self.sorter.sort(data,visualization=True)
+        self.sorter.sort(data, visualization=True)
         self.hist_arr = self.sorter.hist_array
         self.scatter = plt.scatter(np.arange(self.hist_arr.shape[1]), self.hist_arr[0])  # plt.scatter(x-array,y-array)
         self.animation = animation.FuncAnimation(self.fig, self.__update, frames=self.hist_arr.shape[0], repeat=False,
                                                  blit=False, interval=1)
         if save:
-            p1 = Process(target=lambda: self.animation.save(self.sorter.name+".mp4", writer=animation.FFMpegWriter(fps=100)))
+            p1 = Process(
+                target=lambda: self.animation.save(self.sorter.name + ".mp4", writer=animation.FFMpegWriter(fps=100)))
             p1.start()
         plt.show()
 
@@ -321,13 +327,13 @@ class SortVisualizer:
         for n in range(100, maxpts, 100):
             # Vary n from 100 to max in steps of 100
             i_1 = np.arange(n)  # array of items from 1 to n
-            self.sorter.sort(i_1)
+            self.sorter.sort(i_1, False)
             val_sorted = self.sorter.count
             i_2 = i_1[::-1]  # reverse the array
             ran.shuffle(i_1)  # shuffle the array
-            self.sorter.sort(i_1)
+            self.sorter.sort(i_1, False)
             val_normal = self.sorter.count
-            self.sorter.sort(i_2)
+            self.sorter.sort(i_2, False)
             val_reverse = self.sorter.count
             x = np.vstack((x, [n]))  # add n to list x
             y_1 = np.vstack((y_1, [val_sorted]))  # add number of basic operations to y lists
@@ -354,4 +360,4 @@ class SortVisualizer:
 
 
 if __name__ == "__main__":
-    SortVisualizer(HeapSort()).visualize(num=500,save=True)
+    SortVisualizer(HeapSort()).visualize(num=500, save=True)
