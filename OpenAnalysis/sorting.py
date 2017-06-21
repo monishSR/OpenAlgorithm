@@ -264,13 +264,12 @@ class QuickSort(SortingAlgorithm):
 
 
 class SortVisualizer:
-    hist_arr, scatter, animation = None, None, None
-
     def __init__(self, sorter: SortingAlgorithm) -> None:
         """
         Constructor for Visualizer
         :param sorter: Instance of a Sorting Algorithm
         """
+        self.hist_arr, self.scatter, self.animation = None, None, None
         self.sorter = sorter
         self.fig = plt.figure()
         self.index = 0
