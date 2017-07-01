@@ -15,7 +15,14 @@ Usage Instructions:
 
 
 class DataStructureBase:
+    """
+    Base class for implementing Data Structures
+    """
     def __init__(self, name: str):
+        """
+        Constructor
+        :param name: Name of Data Structure. Drawing Layout is determined by the name itself
+        """
         self.name = name
         self.is_tree = "TREE" in name.upper() or "HEAP" in name.upper()
         self.layout = self.__binary_tree_layout if self.is_tree else self.__hierarchy_pos
@@ -46,12 +53,12 @@ class DataStructureBase:
            pos: a dict saying where all nodes go if they have been assigned
            parent: parent of this branch.
            each node has an attribute "left: or "right"'''
-        if pos == None:
+        if pos is None:
             pos = {root: (xcenter, vert_loc)}
         else:
             pos[root] = (xcenter, vert_loc)
         neighbors = G.neighbors(root)
-        if parent != None:
+        if parent is not None:
             neighbors.remove(parent)
         if len(neighbors) != 0:
             dx = width / 2.
@@ -105,8 +112,15 @@ class DataStructureBase:
 
 
 class DataStructureVisualization:
-
+    """
+    Class for visualizing data structures in GUI
+    Using GTK+ 3
+    """
     def __init__(self, ds: DataStructureBase):
+        """
+        Constructor
+        :param ds: Any data structure, which is an instance of DataStructureBase
+        """
         self.ds = ds
         self.builder = gtk.Builder()
         self.builder.add_from_file("sd.glade")
@@ -133,6 +147,9 @@ class DataStructureVisualization:
 
 
 class BinarySearchTree(DataStructureBase):
+    """
+    Sample implementation of Data Structure, incomplete
+    """
     class Node:
         def __init__(self, data):
             self.left = None
@@ -190,6 +207,9 @@ class BinarySearchTree(DataStructureBase):
 
 
 class BinaryHeap(DataStructureBase):
+    """
+    Sample implementation of Data Structure
+    """
     def __init__(self, a=[], typ=True):
         DataStructureBase.__init__(self, "Binary Heap")
         self.elements = [0 for k in range(len(a) + 1)]
