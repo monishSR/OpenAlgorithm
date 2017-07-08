@@ -313,9 +313,11 @@ class SortVisualizer:
 
     def efficiency(self, maxpts=1000):
         """
-        Plots the running time sorting algorithm
+        Plots the running time of sorting algorithm
         Checks for 3 cases, Already Sorted array, reverse sorted array and Shuffled array
-        Sorting Algorithm must return number of basic operations
+        Analysis is done  by inputting randomly shuffled integer arrays with size staring
+        from 100, and varying upto maxpts in the steps of 100, and counting the number of
+        basic operations
         :param maxpts: Upper bound on elements chosen for analysing efficiency
         """
         # x is list of input sizes
@@ -357,6 +359,33 @@ class SortVisualizer:
         plt.tight_layout(pad=2)
         plt.show()
 
+    @staticmethod
+    def compare(algorithms):
+        """
+        Compares the given list of Sorting Algorithms and Plots a bar chart
+        :param algorithms: List of Sorting Algorithms
+        """
+        base_arr = np.arange(2000)
+        np.random.shuffle(base_arr)
+        arr = np.copy(base_arr)
+        operations = []
+        for algorithm in algorithms:
+            algorithm.sort(arr)
+            operations.append((algorithm.name,algorithm.count))
+            arr = np.copy(base_arr)
+        operations = sorted(operations,key=lambda x:x[0])
+        rects = plt.bar(left=np.arange(len(operations)),height=[y for (x,y) in operations])
+        plt.xticks(np.arange(len(operations)),[x for (x,y) in operations])
+        ax = plt.axes()
+        for rect in rects:
+            height = rect.get_height()
+            ax.text(rect.get_x() + rect.get_width() / 2., 1.05 * height,
+                    '%d' % int(height),
+                    ha='center', va='bottom')
+        plt.show()
+
 
 if __name__ == "__main__":
-    SortVisualizer(HeapSort()).visualize(num=500, save=True)
+    # SortVisualizer(HeapSort()).visualize(num=500, save=True)
+    SortVisualizer.compare([BubbleSort(),HeapSort(),MergeSort(),QuickSort(),InsertionSort(),
+                            SelectionSort()])

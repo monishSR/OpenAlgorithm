@@ -4,11 +4,24 @@ import numpy as np
 
 
 class SearchingAlgorithm:
+    """
+    Base class for all Searching Algorithms
+    """
     def __init__(self, name: str):
+        """
+        Constructor
+        :param name: Name of Searching algorithm being implemented
+        """
         self.count = 0
         self.name = name
 
     def search(self, arr:np.ndarray, key):
+        """
+        The core search method
+        :param arr: numpy array, in witch the search is performed
+        :param key: the element to be searched
+        :return: True if key in arr else False
+        """
         self.count = 0
         pass
         # Do search in derived classes
@@ -48,11 +61,25 @@ class BinarySearch(SearchingAlgorithm):
 
 
 class SearchVisualizer:
+    """
+    Class for Visualizing Search algorithms
+    """
     def __init__(self, searcher: SearchingAlgorithm):
+        """
+        Constructor for visualizer
+        :param searcher: Implementation of a Searching Algorithm
+        """
         self.searcher = searcher
         self.fig = plt.figure()
 
     def analyze(self, maxpts=1000):
+        """
+        Plots the running time of sorting algorithm
+        Checks for 3 cases, Already Sorted array, reverse sorted array and Shuffled array
+        Analysis is done  by inputting integer arrays with size staring from 100, and varying
+        upto maxpts in the steps of 100, and counting the number of basic operations
+        :param maxpts: Maximum number of element in the array, using witch analysis is done
+        """
         # x Number of elements
         # y_1 number of comparisons when First Element is the key
         # y_2 number of comparisons when Middle Element is the key
@@ -89,6 +116,30 @@ class SearchVisualizer:
         plt.tight_layout(pad=2)
         plt.show()
 
+    @staticmethod
+    def compare(algorithms):
+        """
+         Compares the given list of Searching Algorithms and Plots a bar chart
+         :param algorithms: List of Searching Algorithms
+         """
+        arr = np.arange(2000)
+        key = np.random.randint(0,2000)
+        operations = []
+        for algorithm in algorithms:
+            algorithm.search(arr,key)
+            operations.append((algorithm.name,algorithm.count))
+        operations = sorted(operations,key=lambda x:x[0])
+        rects = plt.bar(left=np.arange(len(operations)),height=[y for (x,y) in operations])
+        plt.xticks(np.arange(len(operations)),[x for (x,y) in operations])
+        ax = plt.axes()
+        for rect in rects:
+            height = rect.get_height()
+            ax.text(rect.get_x() + rect.get_width() / 2., 1.05 * height,
+                    '%d' % int(height),
+                    ha='center', va='bottom')
+        plt.show()
+
 
 if __name__ == "__main__":
-    SearchVisualizer(BinarySearch()).analyze(maxpts=10000)
+    # SearchVisualizer(BinarySearch()).analyze(maxpts=10000)
+    SearchVisualizer.compare([LinearSearch(),BinarySearch()])
