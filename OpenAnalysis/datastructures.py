@@ -8,7 +8,7 @@ from gi.repository import Gtk as gtk
 Usage Instructions:
 
 >sudo apt install python-gi-cairo
->put sd.glade in same working directtory
+>put sd.glade in same working directory
 >in main(),pass any instance of DataStructureBase
 
 '''
@@ -22,23 +22,65 @@ class DataStructureBase:
         """
         Constructor
         :param name: Name of Data Structure. Drawing Layout is determined by the name itself
+        If the name contains 'tree', then layout is tree layout, else Graph
         """
         self.name = name
         self.is_tree = "TREE" in name.upper() or "HEAP" in name.upper()
         self.layout = self.__binary_tree_layout if self.is_tree else self.__hierarchy_pos
+        self.graph = nx.Graph()
         # Layout to draw BFS tree
 
     def insert(self, item):
+        """
+        Insert item to Data Structure
+        While inserting, add a edge from parent to child in self.graph
+        :param item: item to be added
+        """
         pass
 
     def delete(self, item):
+        """
+        Delete the item from Data Structure
+        While removing, delete item from self.graph and modify the edges if necessary
+        :param item: item to be deleted
+        """
         pass
 
     def find(self, item):
+        """
+        Finds the item in Data Structure
+        :param item: item to be searched
+        :return: True if item in self else False
+        also can implement __contains__(self,item)
+        """
         pass
 
+    def __contains__(self, item):
+        return self.find(item)
+
     def draw(self):
-        pass
+        """
+        ----old-----
+        Do a BFS and draw the Data Structure
+        Data Structure is essentially graph like and can be represented by Mathematical Relation
+        For example Graph G : 1--2--3 can be represented as R_G = {(1,2),(2,3)}
+        In python they can be represented as Set, whose elements are tuples
+        At last, set can be transformed into list, and a graph can be created
+        example:
+            >>> s = {(1,2),(2,3),(1,3)}
+            >>> r = list(s)
+            >>> G = nx.Graph(r)
+
+        Such a set can be crated during operations or a BFS on Data Structure by updating self
+        -----new-----
+        plots self.graph, saves the image and returns the path to saved image
+        """
+        Tree = self.graph
+        if Tree.nodes():
+            pos = self.layout(Tree, self.root)
+            nx.draw(Tree, pos, with_labels=True)
+            plt.savefig("/tmp/algo/f.png")
+        return "/tmp/algo/f.png"
 
     @staticmethod
     def __binary_tree_layout(G, root, width=1., vert_gap=0.2, vert_loc=0., xcenter=0.5,
@@ -177,38 +219,36 @@ class BinarySearchTree(DataStructureBase):
         if parent is None:
             self.root = newNode
         else:
+            self.graph.add_edge(parent, newNode)
             if parent.data > newNode.data:
                 parent.left = newNode
+                self.graph.node[newNode]['child_status'] = "left"
             else:
                 parent.right = newNode
+                self.graph.node[newNode]['child_status'] = "right"
         self.count += 1
 
-    def draw(self):
-        Q = [self.root]
-        S = [self.root]
-        Tree = nx.Graph()
-        while len(Q) is not 0:
-            current = Q.pop(0)
-            if current.left not in S and current.left is not None:
-                S.append(current.left)
-                Tree.add_edge(current, current.left)
-                Tree.node[current.left]['child_status'] = 'left'
-                Q.append(current.left)
-            if current.right not in S and current.right is not None:
-                S.append(current.right)
-                Tree.add_edge(current, current.right)
-                Tree.node[current.right]['child_status'] = 'right'
-                Q.append(current.right)
-        if Tree.nodes():
-            pos = self.layout(Tree, self.root)
-            nx.draw(Tree, pos, with_labels=True)
-            plt.savefig("/tmp/algo/f.png")
-        return "/tmp/algo/f.png"
+    def find(self, item):
+        node = self.root
+        while node is not None:
+            if item < node:
+                node = node.left
+            elif item > node:
+                node = node.right
+            else:
+                return True
+        return False
+
+    def delete(self, item):
+        if item not in self:
+            raise ValueError("{0} not in Tree".format(item))
+        pass
 
 
 class BinaryHeap(DataStructureBase):
     """
-    Sample implementation of Data Structure
+    Sample implementation of Data Structure, Incomplete
+    Do corrections
     """
     def __init__(self, a=[], typ=True):
         DataStructureBase.__init__(self, "Binary Heap")
@@ -255,6 +295,7 @@ class BinaryHeap(DataStructureBase):
         return p < q
 
     def draw(self):
+        """Not necessary now, build tree during insertion"""
         current_position = 1
         H = nx.Graph()
         plt.clf()
