@@ -1,3 +1,4 @@
+
 class UnionFind:
     """Union-find data structure.
 
@@ -62,6 +63,30 @@ class UnionFind:
             if r != heaviest:
                 self.weights[heaviest] += self.weights[r]
                 self.parents[r] = heaviest
+
+
+class PriorityQueue:
+    def __init__(self):
+        self.heap = []
+
+    def add_task(self,task,priority):
+        import heapq
+        heapq.heappush(self.heap,(priority,task))
+
+    def remove_min(self):
+        import heapq
+        return heapq.heappop(self.heap)[1]
+
+    def remove(self,task):
+        import heapq
+        for task_pair in self.heap:
+            if task_pair[1] == task:
+                self.heap.remove(task_pair)
+                heapq.heapify(self.heap)
+
+    def update_task(self,task,new_priority):
+        self.remove(task)
+        self.add_task(task,new_priority)
 
 
 import networkx as nx
@@ -177,28 +202,24 @@ def dijsktra(G, source=None):
     if source is None: source = G.nodes()[0]
     V = G.nodes()
     dist, prev = {}, {}
-    Q = []
-    import heapq
+    Q = PriorityQueue()
     for v in V:
         dist[v] = float("inf")
         prev[v] = None
-        heapq.heappush(Q, (dist[v], v))
+        Q.add_task(task=v,priority=dist[v])
     dist[source] = 0
-    heapq.heapreplace(Q, (dist[source], source))
+    Q.update_task(task=source,new_priority=dist[source])
     visited = set()
     for i in range(0, len(G.nodes())):
-        _, u_star = heapq.heappop(Q)
+        u_star = Q.remove_min()
         if prev[u_star] is not None:
             yield (u_star, prev[u_star])
         visited.add(u_star)
         for u in G.neighbors(u_star):
             if u not in visited and dist[u_star] + G.edge[u][u_star]['weight'] < dist[u]:
-                Q.remove((dist[u], u))
                 dist[u] = dist[u_star] + G.edge[u][u_star]['weight']
                 prev[u] = u_star
-                Q.append((dist[u], u))
-                heapq.heapify(Q)
-    return dist,prev
+                Q.update_task(u,dist[u])
 
 
 def tree_growth_visualizer(fun):
