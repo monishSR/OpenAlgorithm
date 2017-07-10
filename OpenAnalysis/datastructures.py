@@ -18,6 +18,7 @@ class DataStructureBase:
     """
     Base class for implementing Data Structures
     """
+
     def __init__(self, name: str):
         """
         Constructor
@@ -58,6 +59,13 @@ class DataStructureBase:
     def __contains__(self, item):
         return self.find(item)
 
+    def get_root(self):
+        """
+        Return the root for drawing purpose
+        :return:
+        """
+        pass
+
     def draw(self):
         """
         ----old-----
@@ -77,7 +85,8 @@ class DataStructureBase:
         """
         Tree = self.graph
         if Tree.nodes():
-            pos = self.layout(Tree, self.root)
+            plt.clf()
+            pos = self.layout(Tree, self.get_root())
             nx.draw(Tree, pos, with_labels=True)
             plt.savefig("/tmp/algo/f.png")
         return "/tmp/algo/f.png"
@@ -158,6 +167,7 @@ class DataStructureVisualization:
     Class for visualizing data structures in GUI
     Using GTK+ 3
     """
+
     def __init__(self, ds: DataStructureBase):
         """
         Constructor
@@ -167,7 +177,7 @@ class DataStructureVisualization:
         self.builder = gtk.Builder()
         self.builder.add_from_file("sd.glade")
         self.builder.connect_signals(self)
-        self.map = [self.ds.insert,self.ds.delete,self.ds.find]
+        self.map = [self.ds.insert, self.ds.delete, self.ds.find]
 
     def run(self):
         self.builder.get_object("stage").show_all()
@@ -177,7 +187,7 @@ class DataStructureVisualization:
     def on_stage_destroy(self, x):
         gtk.main_quit()
 
-    def action_clicked_cb(self,button):
+    def action_clicked_cb(self, button):
         try:
             ele = int(self.builder.get_object("item").get_text())
             choice = int(self.builder.get_object("operation").get_active())
@@ -192,6 +202,7 @@ class BinarySearchTree(DataStructureBase):
     """
     Sample implementation of Data Structure, incomplete
     """
+
     class Node:
         def __init__(self, data):
             self.left = None
@@ -205,6 +216,9 @@ class BinarySearchTree(DataStructureBase):
         DataStructureBase.__init__(self, "Binary Search Tree")
         self.root = None
         self.count = 0
+
+    def get_root(self):
+        return self.root
 
     def insert(self, item):
         newNode = BinarySearchTree.Node(item)
@@ -222,10 +236,10 @@ class BinarySearchTree(DataStructureBase):
             self.graph.add_edge(parent, newNode)
             if parent.data > newNode.data:
                 parent.left = newNode
-                self.graph.node[newNode]['child_status'] = "left"
+                self.graph.node[newNode]['child_status'] = 'left'
             else:
                 parent.right = newNode
-                self.graph.node[newNode]['child_status'] = "right"
+                self.graph.node[newNode]['child_status'] = 'right'
         self.count += 1
 
     def find(self, item):
@@ -239,10 +253,28 @@ class BinarySearchTree(DataStructureBase):
                 return True
         return False
 
+    def __contains__(self, item):
+        """
+        To use in operator
+        :param item: item to be found out
+        :return: True if item in self else False
+        example:
+            >>> t = BinarySearchTree()
+            >>> x = [9,2,1,4,3,2,6,7,0]
+            >>> for item in x:
+            >>>     t.insert(x)
+            >>> 0 in t
+                True
+            >>> 10 in t
+                False
+        """
+        return self.find(item)
+
     def delete(self, item):
         if item not in self:
             raise ValueError("{0} not in Tree".format(item))
         pass
+        # Implement
 
 
 class BinaryHeap(DataStructureBase):
@@ -250,55 +282,42 @@ class BinaryHeap(DataStructureBase):
     Sample implementation of Data Structure, Incomplete
     Do corrections
     """
-    def __init__(self, a=[], typ=True):
+
+    def __init__(self):
         DataStructureBase.__init__(self, "Binary Heap")
-        self.elements = [0 for k in range(len(a) + 1)]
-        self.typ = typ
         self.count = 0
-        for j in a:
-            self.insert(j)
+        self.elements = [None]
+
+    def get_root(self):
+        return self.elements[1]
 
     def insert(self, element):
-        if element in self.elements:
+        if element in self:
             raise Exception("not unique")
         self.count += 1
         self.elements.extend([0])
         insert_position = self.count
-        while insert_position > 1 and self.compare_to(self.elements[int(insert_position / 2)], element):
+        while insert_position > 1 and self.elements[int(insert_position / 2)] > element:
             self.elements[insert_position] = self.elements[int(insert_position / 2)]
             insert_position = int(insert_position / 2)
         self.elements[insert_position] = element
+        self.update_graph()
 
-    def delete(self, item):
-        root = self.elements[1]
-        item = self.elements[self.count]
-        self.count -= 1
-        self.elements[1] = item
-        insert_position = 1
-        is_heap = False
-        while insert_position <= int(self.count / 2) and not is_heap:
-            extreme_c_pos = 2 * insert_position
-            extreme_c_pos = extreme_c_pos if self.compare_to(self.elements[extreme_c_pos + 1],
-                                                             self.elements[extreme_c_pos]) \
-                else extreme_c_pos + 1
-            if self.compare_to(self.elements[extreme_c_pos], item):
-                is_heap = True
-            else:
-                self.elements[insert_position] = self.elements[extreme_c_pos]
-                insert_position = extreme_c_pos
-        self.elements[insert_position] = item
-        return root
+    def delete(self, ele):
+        pos = 0
+        if ele in self:
+            pos = self.pos(ele)
+        else:
+            raise ValueError("{0} not found in Heap".format(ele))
 
-    def compare_to(self, p, q):
-        if self.typ:
-            return p > q
-        return p < q
+    pass
 
-    def draw(self):
-        """Not necessary now, build tree during insertion"""
+    # Implement
+
+    def update_graph(self):
+        H = self.graph
+        H.clear()
         current_position = 1
-        H = nx.Graph()
-        plt.clf()
         while current_position <= int(self.count / 2):
             H.add_edge(self.elements[current_position], self.elements[2 * current_position])
             H.node[self.elements[2 * current_position]]['child_status'] = 'left'
@@ -306,11 +325,16 @@ class BinaryHeap(DataStructureBase):
                 H.add_edge(self.elements[current_position], self.elements[2 * current_position + 1])
                 H.node[self.elements[2 * current_position + 1]]['child_status'] = 'right'
             current_position += 1
-        if H.nodes():
-            pos = self.layout(H, self.elements[1])
-            nx.draw(H, pos, with_labels=True)
-        plt.savefig("/tmp/algo/f.png")
-        return "/tmp/algo/f.png"
+
+    def delete_min(self):
+        return self.delete(self.elements[1])
+
+    def __contains__(self, item):
+        return item in self.elements[1:]
+
+    def pos(self, item):
+        return self.elements[1:].index(item)
+
 
 if __name__ == "__main__":
-    DataStructureVisualization(BinarySearchTree()).run()
+    DataStructureVisualization(BinaryHeap()).run()
