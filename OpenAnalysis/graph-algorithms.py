@@ -65,32 +65,68 @@ class UnionFind:
 
 
 class PriorityQueue:
+    """
+    A simple Priority Queue Implementation for usage in algorithms
+    Internally uses heapq to maintain min-heap and tasks are added
+    as tuples (priority,task) to queue. To make the order of tasks
+    with same priority clear, count of element insertion is added
+    to the tuple, making it as (priority,count,task), which means
+    that tasks are first ordered by priority then by count
+    """
     def __init__(self):
+        """
+        Create an empty Priority Queue
+        """
+        from itertools import count
         self.heap = []
+        self.counter = count()
 
     def add_task(self, task, priority):
+        """
+        Add a task to priority queue
+        :param task: task to be added to queue
+        :param priority: priority of the task, must be orderable
+        """
         import heapq
-        heapq.heappush(self.heap, (priority, task))
+        heapq.heappush(self.heap, (priority, next(self.counter), task))
 
     def remove_min(self):
+        """
+        Removes the minimum element of heap
+        :return: task with less priority
+        """
         import heapq
-        return heapq.heappop(self.heap)[1]
+        return heapq.heappop(self.heap)[2]
 
     def remove(self, task):
+        """
+        Removes the tasks from Queue
+        :param task: task to removed from the Queue
+
+        Currently it takes O(n) time to find , and O(log n) to remove, making it O(n)
+        further improvements can be done
+        """
         import heapq
         for task_pair in self.heap:
-            if task_pair[1] == task:
+            if task_pair[2] == task:
                 self.heap.remove(task_pair)
                 heapq.heapify(self.heap)
 
     def update_task(self, task, new_priority):
+        """
+        Updates the priority of exsisting task in Queue
+        :param task: task to be updated
+        :param new_priority: new value of priority
+
+        Updation is implemented as deletion and insertion, takes O(n) time
+        further improvements can be done
+        """
         self.remove(task)
         self.add_task(task, new_priority)
 
 
 import networkx as nx
 import matplotlib.pyplot as plt
-
 
 def kruskal_mst(G):
     """
@@ -191,7 +227,7 @@ def bfs(G, root=None):
                     yield (current, n)
 
 
-def dijsktra(G, source=None):
+def dijkstra(G, source=None):
     """
     Returns edges of Single source shortest path starting form source
     :param G: networkx Graph
@@ -281,9 +317,56 @@ def tree_growth_visualizer(fun):
     plt.axis('off')
     plt.savefig("output/fig%04d.png" % i)
     # Now call ffmpeg to convert images to video
-    os.system('ffmpeg -r 2 -i output/fig%04d.png -c:v libx264 -vf "format=yuv420p"  output/{0}.mp4'.format(fun.__name__))
+    os.system(
+        'ffmpeg -y -r 2 -i output/fig%04d.png -c:v libx264 -vf "format=yuv420p"  output/{0}.mp4'.format(fun.__name__))
     os.system('rm output/*png')
 
 
+def apply_to_graph(fun):
+    """
+    Visualizer function for Graph algorithms yielding the edges
+    :param fun: A function which has the signature f(G) and returns iterator of edges of graph G
+    :return: Plot showing G and fun(G)
+    """
+    G = nx.random_geometric_graph(100, .125)
+    # position is stored as node attribute data for random_geometric_graph
+    pos = nx.get_node_attributes(G, 'pos')
+    # find node near center (0.5,0.5)
+    color = {}
+    dmin = 1
+    ncenter = 0
+    for n in pos:
+        x, y = pos[n]
+        d = (x - 0.5) ** 2 + (y - 0.5) ** 2
+        color[n] = d
+        if d < dmin:
+            ncenter = n
+            dmin = d
+    for u, v in G.edges():
+        G.edge[u][v]['weight'] = ((G.node[v]['pos'][0] - G.node[u]['pos'][0]) ** 2 +
+                                  (G.node[v]['pos'][1] - G.node[u]['pos'][1]) ** 2) ** .5
+    res = nx.Graph(list(fun(G)))
+    plt.figure(figsize=(10, 8))
+    plt.suptitle(fun.__name__ + " algorithm application")
+    plt.subplot(1,2,1)
+    plt.title("Original Graph G")
+    nx.draw_networkx_edges(G, pos, nodelist=[ncenter], alpha=0.4)
+    nx.draw_networkx_nodes(G, pos, nodelist=color.keys(),
+                           node_size=80,
+                           node_color=list(color.values()),
+                           cmap=plt.get_cmap("Reds_r")
+                           ).set_edgecolor('k')
+    plt.xlim(-0.05, 1.05)
+    plt.ylim(-0.05, 1.05)
+    plt.axis('off')
+    plt.subplot(1,2,2)
+    plt.title("Resultant Graph, R = {0}(G)".format(fun.__name__))
+    nx.draw_networkx_edges(res, pos, nodelist=[ncenter], alpha=0.4)
+    nx.draw_networkx_nodes(res,pos,node_color=list(color[n] for n in res.nodes()),node_size=80,cmap=plt.get_cmap("Greens_r")).set_edgecolor('k')
+    plt.xlim(-0.05, 1.05)
+    plt.ylim(-0.05, 1.05)
+    plt.axis('off')
+    plt.show()
+
 if __name__ == "__main__":
-    tree_growth_visualizer(dfs)
+    tree_growth_visualizer(nx.prim_mst_edges)
