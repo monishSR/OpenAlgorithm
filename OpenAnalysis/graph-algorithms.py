@@ -1,4 +1,3 @@
-
 class UnionFind:
     """Union-find data structure.
 
@@ -69,24 +68,24 @@ class PriorityQueue:
     def __init__(self):
         self.heap = []
 
-    def add_task(self,task,priority):
+    def add_task(self, task, priority):
         import heapq
-        heapq.heappush(self.heap,(priority,task))
+        heapq.heappush(self.heap, (priority, task))
 
     def remove_min(self):
         import heapq
         return heapq.heappop(self.heap)[1]
 
-    def remove(self,task):
+    def remove(self, task):
         import heapq
         for task_pair in self.heap:
             if task_pair[1] == task:
                 self.heap.remove(task_pair)
                 heapq.heapify(self.heap)
 
-    def update_task(self,task,new_priority):
+    def update_task(self, task, new_priority):
         self.remove(task)
-        self.add_task(task,new_priority)
+        self.add_task(task, new_priority)
 
 
 import networkx as nx
@@ -113,12 +112,12 @@ def prim(G):
     :param G: networkx graph
     :return: iterator through edges of Minimum spanning Tree
     """
-    V = G.nodes()       # Set of all vertices of G
+    V = G.nodes()  # Set of all vertices of G
     while V:
         # We pop the nodes as soon as they are visited,
         # so this means "until all the nodes are visited"
-        u = V.pop(0)    # Now remove the first vertex and start building the tree
-        visited = {u}   # Set of visited nodes
+        u = V.pop(0)  # Now remove the first vertex and start building the tree
+        visited = {u}  # Set of visited nodes
         stringe_heap = []  # Store the stringe nodes with weights
         import heapq
         for v in G.neighbors(u):
@@ -149,7 +148,7 @@ def dfs(G, root=None):
     """
     visited = set()
     if root is None:
-        nodes = G.nodes()       # nodes to visit
+        nodes = G.nodes()  # nodes to visit
     else:
         nodes = [root]
     for start in nodes:
@@ -206,9 +205,9 @@ def dijsktra(G, source=None):
     for v in V:
         dist[v] = float("inf")
         prev[v] = None
-        Q.add_task(task=v,priority=dist[v])
+        Q.add_task(task=v, priority=dist[v])
     dist[source] = 0
-    Q.update_task(task=source,new_priority=dist[source])
+    Q.update_task(task=source, new_priority=dist[source])
     visited = set()
     for i in range(0, len(G.nodes())):
         u_star = Q.remove_min()
@@ -219,7 +218,7 @@ def dijsktra(G, source=None):
             if u not in visited and dist[u_star] + G.edge[u][u_star]['weight'] < dist[u]:
                 dist[u] = dist[u_star] + G.edge[u][u_star]['weight']
                 prev[u] = u_star
-                Q.update_task(u,dist[u])
+                Q.update_task(u, dist[u])
 
 
 def tree_growth_visualizer(fun):
@@ -244,30 +243,47 @@ def tree_growth_visualizer(fun):
         G.edge[u][v]['weight'] = ((G.node[v]['pos'][0] - G.node[u]['pos'][0]) ** 2 +
                                   (G.node[v]['pos'][1] - G.node[u]['pos'][1]) ** 2) ** .5
     plt.figure(figsize=(8, 8))
+    plt.title(fun.__name__ + " algorithm visualization")
     nx.draw_networkx_edges(G, pos, nodelist=[ncenter], alpha=0.4)
     plt.xlim(-0.05, 1.05)
     plt.ylim(-0.05, 1.05)
     plt.axis('off')
     edge_list = []
     i = 0
+    # Create folder to save visualization
+    import errno
+    import os
+    path = "output"
+    try:
+        os.makedirs(path)
+    except OSError as exc:
+        if exc.errno == errno.EEXIST and os.path.isdir(path):
+            pass
+        else:
+            raise
     for i, edge in enumerate(fun(G)):
         plt.clf()
+        plt.title(fun.__name__ + " algorithm visualization")
         nx.draw_networkx_edges(G, pos, nodelist=[ncenter], alpha=0.4)
         T = nx.Graph(edge_list)
         nx.draw_networkx_edges(T, pos, nodelist=[ncenter], edge_color="r")
         nx.draw_networkx_nodes(T, pos, node_color='g', alpha=0.5, node_size=100)
         plt.axis('off')
-        plt.savefig("test/fig%04d.png" % (i))
+        plt.savefig("output/fig%04d.png" % i)
         print(i)
         edge_list += [edge]
     plt.clf()
+    plt.title(fun.__name__ + " algorithm visualization")
     nx.draw_networkx_edges(G, pos, nodelist=[ncenter], alpha=0.4)
     T = nx.Graph(edge_list)
     nx.draw_networkx_edges(T, pos, nodelist=[ncenter], edge_color="r")
     nx.draw_networkx_nodes(T, pos, node_color='g', alpha=0.5, node_size=100)
     plt.axis('off')
-    plt.savefig("test/fig%04d.png" % i)
+    plt.savefig("output/fig%04d.png" % i)
+    # Now call ffmpeg to convert images to video
+    os.system('ffmpeg -r 2 -i output/fig%04d.png -c:v libx264 -vf "format=yuv420p"  output/{0}.mp4'.format(fun.__name__))
+    os.system('rm output/*png')
 
 
 if __name__ == "__main__":
-    tree_growth_visualizer(dijsktra)
+    tree_growth_visualizer(dfs)
