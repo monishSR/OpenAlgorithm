@@ -7,6 +7,7 @@ class SearchingAlgorithm:
     """
     Base class for all Searching Algorithms
     """
+
     def __init__(self, name: str):
         """
         Constructor
@@ -15,7 +16,7 @@ class SearchingAlgorithm:
         self.count = 0
         self.name = name
 
-    def search(self, arr:np.ndarray, key):
+    def search(self, arr: np.ndarray, key):
         """
         The core search method
         :param arr: numpy array, in witch the search is performed
@@ -27,49 +28,17 @@ class SearchingAlgorithm:
         # Do search in derived classes
 
 
-class LinearSearch(SearchingAlgorithm):
-    def __init__(self):
-        SearchingAlgorithm.__init__(self, "Linear Search")
-
-    def search(self, arr:np.ndarray, key) -> bool:
-        SearchingAlgorithm.search(self, arr, key)
-        for i in range(0, arr.size - 1):
-            self.count += 1
-            if arr[i] == key:
-                return True
-        return False
-
-
-class BinarySearch(SearchingAlgorithm):
-    def __init__(self):
-        SearchingAlgorithm.__init__(self, "Binary Search")
-
-    def search(self, arr:np.ndarray, key) -> bool:
-        SearchingAlgorithm.search(self, arr, key)
-        SearchingAlgorithm.search(self, arr, key)
-        low, high = 0, arr.size - 1
-        while low <= high:
-            mid = int((low + high) / 2)
-            self.count += 1
-            if arr[mid] == key:
-                return True
-            elif arr[mid] < key:
-                low = mid + 1
-            else:
-                high = mid - 1
-        return False
-
-
 class SearchVisualizer:
     """
     Class for Visualizing Search algorithms
     """
-    def __init__(self, searcher: SearchingAlgorithm):
+
+    def __init__(self, searcher):
         """
         Constructor for visualizer
         :param searcher: Implementation of a Searching Algorithm
         """
-        self.searcher = searcher
+        self.searcher = searcher()  # Instantiate
         self.fig = plt.figure()
 
     def analyze(self, maxpts=1000):
@@ -123,14 +92,15 @@ class SearchVisualizer:
          :param algorithms: List of Searching Algorithms
          """
         arr = np.arange(2000)
-        key = np.random.randint(0,2000)
+        key = np.random.randint(0, 2000)
         operations = []
+        algorithms = [x() for x in algorithms]  # Instantiate
         for algorithm in algorithms:
-            algorithm.search(arr,key)
-            operations.append((algorithm.name,algorithm.count))
-        operations = sorted(operations,key=lambda x:x[0])
-        rects = plt.bar(left=np.arange(len(operations)),height=[y for (x,y) in operations])
-        plt.xticks(np.arange(len(operations)),[x for (x,y) in operations])
+            algorithm.search(arr, key)
+            operations.append((algorithm.name, algorithm.count))
+        operations = sorted(operations, key=lambda x: x[0])
+        rects = plt.bar(left=np.arange(len(operations)), height=[y for (x, y) in operations])
+        plt.xticks(np.arange(len(operations)), [x for (x, y) in operations])
         ax = plt.axes()
         for rect in rects:
             height = rect.get_height()
@@ -138,8 +108,3 @@ class SearchVisualizer:
                     '%d' % int(height),
                     ha='center', va='bottom')
         plt.show()
-
-
-if __name__ == "__main__":
-    # SearchVisualizer(BinarySearch()).analyze(maxpts=10000)
-    SearchVisualizer.compare([LinearSearch(),BinarySearch()])
