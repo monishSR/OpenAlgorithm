@@ -109,7 +109,9 @@ class MatrixAnimator:
             Writer = animation.writers['ffmpeg']
             writer = Writer(fps=1, metadata=dict(artist='V'), bitrate=1800)
             from multiprocessing import Process
-            Process(target=x.save, args=('output/%s.mp4' % self.fn.__name__,), kwargs={'writer': writer}).start()
+            import os
+            path = os.path.join('output', '%s.mp4' % self.fn.__name__)
+            Process(target=x.save, args=(path,), kwargs={'writer': writer}).start()
         plt.show()
 
     def apply_to_graph(self, show_graph=True):

@@ -60,7 +60,7 @@ def tree_growth_visualizer(fun):
     nx.draw_networkx_edges(T, pos, nodelist=[ncenter], edge_color="r")
     nx.draw_networkx_nodes(T, pos, node_color='g', alpha=0.5, node_size=100)
     plt.axis('off')
-    plt.savefig("output/fig%04d.png" % i)
+    plt.savefig(os.path.join("output", 'fig%04d.png' % i))
     # Now call ffmpeg to convert images to video
     os.system(
         'ffmpeg -y -r 2 -i output/fig%04d.png \
@@ -96,7 +96,7 @@ def apply_to_graph(fun):
     res = nx.Graph(list(fun(G)))
     plt.figure(figsize=(10, 8))
     plt.suptitle(fun.__name__ + " algorithm application")
-    plt.subplot(1,2,1)
+    plt.subplot(1, 2, 1)
     plt.title("Original Graph G")
     nx.draw_networkx_edges(G, pos, nodelist=[ncenter], alpha=0.4)
     nx.draw_networkx_nodes(G, pos,
@@ -108,10 +108,10 @@ def apply_to_graph(fun):
     plt.xlim(-0.05, 1.05)
     plt.ylim(-0.05, 1.05)
     plt.axis('off')
-    plt.subplot(1,2,2)
+    plt.subplot(1, 2, 2)
     plt.title("Resultant Graph, R = {0}(G)".format(fun.__name__))
     nx.draw_networkx_edges(res, pos, nodelist=[ncenter], alpha=0.4)
-    nx.draw_networkx_nodes(res,pos,
+    nx.draw_networkx_nodes(res, pos,
                            node_color=list(color[n] for n in res.nodes()),
                            node_size=80,
                            cmap=plt.get_cmap("Greens_r")).set_edgecolor('k')
@@ -119,4 +119,3 @@ def apply_to_graph(fun):
     plt.ylim(-0.05, 1.05)
     plt.axis('off')
     plt.show()
-

@@ -75,8 +75,10 @@ class SortVisualizer:
         self.animation = animation.FuncAnimation(self.fig, self.__update, frames=self.hist_arr.shape[0], repeat=False,
                                                  blit=False, interval=1)
         if save:
+            import os
+            path = os.path.join('output',self.sorter.name + ".mp4")
             p1 = Process(
-                target=lambda: self.animation.save(self.sorter.name + ".mp4", writer=animation.FFMpegWriter(fps=100)))
+                target=lambda: self.animation.save(path, writer=animation.FFMpegWriter(fps=100)))
             p1.start()
         plt.show()
 
