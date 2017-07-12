@@ -1,3 +1,7 @@
+import networkx as nx
+import matplotlib.pyplot as plt
+
+
 class UnionFind:
     """Union-find data structure.
 
@@ -124,9 +128,6 @@ class PriorityQueue:
         self.remove(task)
         self.add_task(task, new_priority)
 
-
-import networkx as nx
-import matplotlib.pyplot as plt
 
 def kruskal_mst(G):
     """
@@ -285,7 +286,6 @@ def tree_growth_visualizer(fun):
     plt.ylim(-0.05, 1.05)
     plt.axis('off')
     edge_list = []
-    i = 0
     # Create folder to save visualization
     import errno
     import os
@@ -297,6 +297,7 @@ def tree_growth_visualizer(fun):
             pass
         else:
             raise
+    i = 0
     for i, edge in enumerate(fun(G)):
         plt.clf()
         plt.title(fun.__name__ + " algorithm visualization")
@@ -318,7 +319,10 @@ def tree_growth_visualizer(fun):
     plt.savefig("output/fig%04d.png" % i)
     # Now call ffmpeg to convert images to video
     os.system(
-        'ffmpeg -y -r 2 -i output/fig%04d.png -c:v libx264 -vf "format=yuv420p"  output/{0}.mp4'.format(fun.__name__))
+        'ffmpeg -y -r 2 -i output/fig%04d.png \
+         -c:v libx264 -vf "format=yuv420p" \
+          output/{0}.mp4'.format(fun.__name__)
+    )
     os.system('rm output/*png')
 
 
@@ -351,7 +355,8 @@ def apply_to_graph(fun):
     plt.subplot(1,2,1)
     plt.title("Original Graph G")
     nx.draw_networkx_edges(G, pos, nodelist=[ncenter], alpha=0.4)
-    nx.draw_networkx_nodes(G, pos, nodelist=color.keys(),
+    nx.draw_networkx_nodes(G, pos,
+                           nodelist=color.keys(),
                            node_size=80,
                            node_color=list(color.values()),
                            cmap=plt.get_cmap("Reds_r")
@@ -362,11 +367,12 @@ def apply_to_graph(fun):
     plt.subplot(1,2,2)
     plt.title("Resultant Graph, R = {0}(G)".format(fun.__name__))
     nx.draw_networkx_edges(res, pos, nodelist=[ncenter], alpha=0.4)
-    nx.draw_networkx_nodes(res,pos,node_color=list(color[n] for n in res.nodes()),node_size=80,cmap=plt.get_cmap("Greens_r")).set_edgecolor('k')
+    nx.draw_networkx_nodes(res,pos,
+                           node_color=list(color[n] for n in res.nodes()),
+                           node_size=80,
+                           cmap=plt.get_cmap("Greens_r")).set_edgecolor('k')
     plt.xlim(-0.05, 1.05)
     plt.ylim(-0.05, 1.05)
     plt.axis('off')
     plt.show()
 
-if __name__ == "__main__":
-    tree_growth_visualizer(nx.prim_mst_edges)

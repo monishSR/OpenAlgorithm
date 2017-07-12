@@ -88,13 +88,13 @@ class DataStructureBase:
             plt.clf()
             pos = self.layout(Tree, self.get_root())
             nx.draw(Tree, pos, with_labels=True)
-            plt.savefig("/tmp/algo/f.png")
-        return "/tmp/algo/f.png"
+            plt.savefig("output/f.png")
+        return "output/f.png"
 
     @staticmethod
     def __binary_tree_layout(G, root, width=1., vert_gap=0.2, vert_loc=0., xcenter=0.5,
                              pos=None, parent=None):
-        '''If there is a cycle that is reachable from root, then this will see infinite recursion.
+        """If there is a cycle that is reachable from root, then this will see infinite recursion.
            G: the graph
            root: the root node of current branch
            width: horizontal space allocated for this branch - avoids overlap with other branches
@@ -103,7 +103,7 @@ class DataStructureBase:
            xcenter: horizontal location of root
            pos: a dict saying where all nodes go if they have been assigned
            parent: parent of this branch.
-           each node has an attribute "left: or "right"'''
+           each node has an attribute "left: or "right\""""
         if pos is None:
             pos = {root: (xcenter, vert_loc)}
         else:
