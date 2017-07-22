@@ -1,7 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy.random as ran
 import matplotlib.animation as animation
-import seaborn as sb
 from multiprocessing import Process
 import numpy as np
 
