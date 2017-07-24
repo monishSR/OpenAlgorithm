@@ -33,7 +33,8 @@
 extensions = ['nbsphinx',
               'sphinx.ext.autodoc',
               'sphinx.ext.imgmath',
-	      'sphinx.ext.githubpages'
+	      'sphinx.ext.githubpages',
+	      'sphinx.ext.imgconverter'
              ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -109,29 +110,43 @@ htmlhelp_basename = 'OpenAnalysisdoc'
 
 
 # -- Options for LaTeX output ---------------------------------------------
-
 latex_elements = {
     # The paper size ('letterpaper' or 'a4paper').
     #
     'papersize': 'a4paper',
-
+	
     # The font size ('10pt', '11pt' or '12pt').
     #
     # 'pointsize': '10pt',
-
+    'fontpkg': r'''
+\setmainfont{DejaVu Serif}
+\setsansfont{DejaVu Sans}
+\setmonofont{DejaVu Sans Mono}
+''',
     # Additional stuff for the LaTeX preamble.
     #
     # 'preamble': '',
-
+    'preamble': r"""\usepackage{svg}
+\usepackage[titles]{tocloft}
+\cftsetpnumwidth {1.25cm}\cftsetrmarg{1.5cm}
+\setlength{\cftchapnumwidth}{0.75cm}
+\setlength{\cftsecindent}{\cftchapnumwidth}
+\setlength{\cftsecnumwidth}{1.25cm}
+\usepackage[draft]{minted}\fvset{breaklines=true}""",
+	
     # Latex figure (float) alignment
     #
     # 'figure_align': 'htbp',
     
     # Remove blank pages in pdf
-    'classoptions': ',openany,oneside'
+    'classoptions': ',openany,oneside',
+    'fncychap': r'\usepackage[Bjornstrup]{fncychap}',
+    'printindex': r'\footnotesize\raggedright\printindex'
 }
 
-latex_logo = 'res/logo256.png'
+latex_logo = 'res/logo32.png'
+
+latex_show_urls = 'footnote'
 
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title,
